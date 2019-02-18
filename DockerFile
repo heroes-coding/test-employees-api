@@ -1,0 +1,15 @@
+FROM microsoft/dotnet:2.2-sdk
+WORKDIR /app
+
+# copy both folders to make sure the test has access to them both, just like in development mode
+COPY Employees.API ./Employees.API
+COPY Employees.TEST ./Employees.TEST
+
+# Restore and then run the tests once
+RUN dotnet restore Employees.TEST
+RUN dotnet test Employees.TEST
+
+# Restore the mini-api  and then run it
+RUN dotnet restore Employees.API
+RUN dotnet publish Employees.API -c Release -o out
+ENTRYPOINT ["dotnet", "Employees.API/out/Employees.API.dll"]
